@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 
 export default class Products extends Component {
   state = {
@@ -11,13 +12,12 @@ export default class Products extends Component {
       <div>
         <input
           type="text"
-          // onChange={ mudar state }
         />
-        <button
-          type="button"
-        >
-          Submit
-        </button>
+        <Link to="/cart" className="btn" data-testid="shopping-cart-button">
+          <button type="button">
+            Teste Link
+          </button>
+        </Link>
         {
           isEmpty ? (
             <p data-testid="home-initial-message">
