@@ -82,13 +82,13 @@ export default class Home extends Component {
     return (
       <div>
         <h1>Home</h1>
-        {
-          isEmpty ? (
-            <p data-testid="home-initial-message">
-              Digite algum termo de pesquisa ou escolha uma categoria.
-            </p>
-          ) : <p>Não vazio</p>
-        }
+        {isEmpty ? (
+          <p data-testid="home-initial-message">
+            Digite algum termo de pesquisa ou escolha uma categoria.
+          </p>
+        ) : (
+          <p>Não vazio</p>
+        )}
 
         <label htmlFor="query-input">
           <input
@@ -108,9 +108,7 @@ export default class Home extends Component {
           Pesquisar
         </button>
         <Link to="/cart" className="btn" data-testid="shopping-cart-button">
-          <button type="button">
-            Carrinho
-          </button>
+          <button type="button">Carrinho</button>
         </Link>
         <h3>Categorias</h3>
         {
@@ -133,22 +131,40 @@ export default class Home extends Component {
             </p>
           ) : (
             getProduct.map((product) => (
-              <div
-                key={ product.id }
-                data-testid="product"
-              >
-                <p>{ product.title }</p>
+       <Link
+              to={ {
+                pathname: '/productDetails',
+                state: {
+                  title: product.title,
+                  price: product.price,
+                  thumbnail: product.thumbnail,
+                },
+              } }
+              data-testid="product-detail-link"
+              key={ product.id }
+            >
+              <div data-testid="product">
+                <p value={ product.title }>{product.title}</p>
                 <p>{product.price}</p>
                 <img src={ product.thumbnail } alt={ product.title } />
+
                 <button
                   data-testid="product-add-to-cart"
                   onClick={ () => this.addToCart(product) }
                 >
                   Adicionar ao carrinho
                 </button>
-              </div>))
-          )
-        }
+              </div>
+              {/* title=
+              { product.title }
+              price=
+              { product.price }
+              thumbnail=
+              { product.thumbnail } */}
+
+            </Link>
+          ))
+        )}
       </div>
     );
   }
