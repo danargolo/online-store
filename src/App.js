@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
-
 import Cart from './components/Cart';
+import ProductDetails from './pages/ProductDetails';
 import Home from './pages/Home';
 
 function App() {
@@ -9,6 +9,7 @@ function App() {
     <Switch>
       <Route exact path="/" component={ Home } />
       <Route exact path="/cart" component={ Cart } />
+      <Route exact path="/productDetails" component={ ProductDetails } />
     </Switch>
   );
 }
