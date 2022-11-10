@@ -1,15 +1,10 @@
 import React, { Component } from 'react';
 
 export default class Cart extends Component {
-  state = {
-    isCartEmpty: true,
-  };
-
   isCartEmpty = () => {
     const cartItems = JSON.parse(localStorage.getItem('cart'));
-    if (cartItems === null) return true;
-    return false;
-  }
+    return !cartItems;
+  };
 
   render() {
     const cartItems = JSON.parse(localStorage.getItem('cart'));
@@ -27,11 +22,11 @@ export default class Cart extends Component {
               const { price, title, totalQuantity } = item;
               return (
                 <div key={ title }>
-                    <p data-testid="shopping-cart-product-name">{title}</p>
-                    <p>{ price * totalQuantity }</p>
-                    <p data-testid="shopping-cart-product-quantity">{ totalQuantity}</p>
-                  </div>
-              )
+                  <p data-testid="shopping-cart-product-name">{title}</p>
+                  <p>{ price * totalQuantity }</p>
+                  <p data-testid="shopping-cart-product-quantity">{ totalQuantity}</p>
+                </div>
+              );
             })
           )
         }

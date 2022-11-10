@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import {
   getCategories,
   getProductsFromCategoryAndQuery,
-  getProductById,
 } from '../services/api';
 
 export default class Home extends Component {
@@ -46,24 +45,24 @@ export default class Home extends Component {
     const storage = JSON.parse(localStorage.getItem('cart'));
     const isRepeated = storage.some((item) => item.id === product.id);
     return isRepeated;
-  }
+  };
 
   addOne = (product) => {
     const storage = JSON.parse(localStorage.getItem('cart'));
-    const nonRepeatedItems = storage.filter((item) => item.id !== product.id)
+    const nonRepeatedItems = storage.filter((item) => item.id !== product.id);
     console.log(nonRepeatedItems);
-    const repeatedItem = storage.find((item) => item.id === product.id)
-    let { totalQuantity } = repeatedItem;
+    const repeatedItem = storage.find((item) => item.id === product.id);
+    const { totalQuantity } = repeatedItem;
     const newQuantity = totalQuantity + 1;
     product.totalQuantity = newQuantity;
     const newStorage = [...nonRepeatedItems, product];
     localStorage.setItem('cart', JSON.stringify(newStorage));
-  }
+  };
 
   addToCart = (product) => {
     const storage = JSON.parse(localStorage.getItem('cart'));
     if (storage === null) {
-      product.totalQuantity = 1;  
+      product.totalQuantity = 1;
       localStorage.setItem('cart', JSON.stringify([product]));
     } else {
       const isRepeated = this.isRepeatedItem(product);
@@ -75,7 +74,7 @@ export default class Home extends Component {
         localStorage.setItem('cart', JSON.stringify(newStorage));
       }
     }
-  }
+  };
 
   render() {
     const { isEmpty, category, inputText, getProduct, isHidden } = this.state;
@@ -131,40 +130,35 @@ export default class Home extends Component {
             </p>
           ) : (
             getProduct.map((product) => (
-       <Link
-              to={ {
-                pathname: '/productDetails',
-                state: {
-                  title: product.title,
-                  price: product.price,
-                  thumbnail: product.thumbnail,
-                },
-              } }
-              data-testid="product-detail-link"
-              key={ product.id }
-            >
-              <div data-testid="product">
-                <p value={ product.title }>{product.title}</p>
-                <p>{product.price}</p>
-                <img src={ product.thumbnail } alt={ product.title } />
-
+              <div key={ product.id }>
+                <Link
+                  to={ {
+                    pathname: '/productDetails',
+                    state: {
+                      title: product.title,
+                      price: product.price,
+                      thumbnail: product.thumbnail,
+                    },
+                  } }
+                  data-testid="product-detail-link"
+                >
+                  <div data-testid="product">
+                    <p value={ product.title }>{product.title}</p>
+                    <p>{product.price}</p>
+                    <img src={ product.thumbnail } alt={ product.title } />
+                  </div>
+                </Link>
                 <button
                   data-testid="product-add-to-cart"
                   onClick={ () => this.addToCart(product) }
+                  type="button"
                 >
                   Adicionar ao carrinho
                 </button>
               </div>
-              {/* title=
-              { product.title }
-              price=
-              { product.price }
-              thumbnail=
-              { product.thumbnail } */}
-
-            </Link>
-          ))
-        )}
+            ))
+          )
+        }
       </div>
     );
   }
