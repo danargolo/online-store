@@ -5,19 +5,34 @@ export default class Cart extends Component {
     isCartEmpty: true,
   };
 
+  isCartEmpty = () => {
+    const cartItems = JSON.parse(localStorage.getItem('cart'));
+    if (cartItems === null) return true;
+    return false;
+  }
+
   render() {
-    const { isCartEmpty } = this.state;
+    const cartItems = JSON.parse(localStorage.getItem('cart'));
     return (
       <div>
         {
-          isCartEmpty ? (
+          this.isCartEmpty() ? (
             <p
               data-testid="shopping-cart-empty-message"
             >
               Seu carrinho está vazio
             </p>
           ) : (
-            <p>Carrinho não vazio</p>
+            cartItems.map((item) => {
+              const { price, title, totalQuantity } = item;
+              return (
+                <div key={ title }>
+                    <p data-testid="shopping-cart-product-name">{title}</p>
+                    <p>{ price * totalQuantity }</p>
+                    <p data-testid="shopping-cart-product-quantity">{ totalQuantity}</p>
+                  </div>
+              )
+            })
           )
         }
       </div>

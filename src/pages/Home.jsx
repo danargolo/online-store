@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { getCategories, getProductsFromCategoryAndQuery } from '../services/api';
+import {
+  getCategories,
+  getProductsFromCategoryAndQuery,
+  getProductById 
+} from '../services/api';
 
 export default class Home extends Component {
   state = {
@@ -37,6 +41,41 @@ export default class Home extends Component {
     const { results } = response;
     this.setState({ getProduct: results });
   };
+
+  isRepeatedItem = (product) => {
+    const storage = JSON.parse(localStorage.getItem('cart'));
+    const isRepeated = storage.some((item) => item.id === product.id);
+    return isRepeated;
+  }
+
+  addOne = (product) => {
+    const storage = JSON.parse(localStorage.getItem('cart'));
+    const nonRepeatedItems = storage.filter((item) => item.id !== product.id)
+    console.log(nonRepeatedItems);
+    const repeatedItem = storage.find((item) => item.id === product.id)
+    let { totalQuantity } = repeatedItem;
+    const newQuantity = totalQuantity + 1;
+    product.totalQuantity = newQuantity;
+    const newStorage = [...nonRepeatedItems, product];
+    localStorage.setItem('cart', JSON.stringify(newStorage));
+  }
+
+  addToCart = (product) => {
+    const storage = JSON.parse(localStorage.getItem('cart'));
+    if (storage === null) {
+      product.totalQuantity = 1;
+      localStorage.setItem('cart', JSON.stringify([product]));
+    } else {
+      const isRepeated = this.isRepeatedItem(product);
+      if (isRepeated) {
+        this.addOne(product);
+      } else {
+        product.totalQuantity = 1;
+        const newStorage = [...storage, product];
+        localStorage.setItem('cart', JSON.stringify(newStorage));
+      }
+    }
+  }
 
   render() {
     const { isEmpty, category, inputText, getProduct, isHidden } = this.state;
@@ -94,7 +133,6 @@ export default class Home extends Component {
             </p>
           ) : (
             getProduct.map((product) => (
-
               <div
                 key={ product.id }
                 data-testid="product"
@@ -102,6 +140,12 @@ export default class Home extends Component {
                 <p>{ product.title }</p>
                 <p>{product.price}</p>
                 <img src={ product.thumbnail } alt={ product.title } />
+                <button
+                  data-testid="product-add-to-cart"
+                  onClick={ () => this.addToCart(product) }
+                >
+                  Adicionar ao carrinho
+                </button>
               </div>))
           )
         }
