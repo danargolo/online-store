@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import {
   getCategories,
   getProductsFromCategoryAndQuery,
-  getProductById 
+  getProductById,
 } from '../services/api';
 
 export default class Home extends Component {
@@ -63,7 +63,7 @@ export default class Home extends Component {
   addToCart = (product) => {
     const storage = JSON.parse(localStorage.getItem('cart'));
     if (storage === null) {
-      product.totalQuantity = 1;
+      product.totalQuantity = 1;  
       localStorage.setItem('cart', JSON.stringify([product]));
     } else {
       const isRepeated = this.isRepeatedItem(product);
