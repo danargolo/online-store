@@ -14,12 +14,10 @@ export default class Home extends Component {
   async componentDidMount() {
     const category = await getCategories();
     this.setState({ category });
-    // console.log(category);
   }
 
   handleChange = ({ target }) => {
     const { value } = target;
-
     this.setState({
       inputText: value,
     });
@@ -32,7 +30,12 @@ export default class Home extends Component {
       getProduct: getProduct.results,
       isHidden: false,
     });
-    // console.log(getProduct);
+  };
+
+  handleCategoryBtn = async (categoryId) => {
+    const response = await getProductsFromCategoryAndQuery(categoryId, '');
+    const { results } = response;
+    this.setState({ getProduct: results });
   };
 
   render() {
@@ -71,18 +74,19 @@ export default class Home extends Component {
           </button>
         </Link>
         <h3>Categorias</h3>
-        {category.map(({ name, id }) => (
-
-          <label key={ id } htmlFor="category">
-            <button
-              data-testid="category"
-              type="button"
-            >
-              {name}
-            </button>
-          </label>
-        ))}
-
+        {
+          category.map(({ name, id }) => (
+            <label key={ id } htmlFor="category">
+              <button
+                data-testid="category"
+                type="button"
+                onClick={ () => this.handleCategoryBtn(id) }
+              >
+                {name}
+              </button>
+            </label>
+          ))
+        }
         {
           getProduct.length === 0 ? (
             <p hidden={ isHidden }>
