@@ -50,7 +50,6 @@ export default class Home extends Component {
   addOne = (product) => {
     const storage = JSON.parse(localStorage.getItem('cart'));
     const nonRepeatedItems = storage.filter((item) => item.id !== product.id);
-    console.log(nonRepeatedItems);
     const repeatedItem = storage.find((item) => item.id === product.id);
     const { totalQuantity } = repeatedItem;
     const newQuantity = totalQuantity + 1;
@@ -106,7 +105,10 @@ export default class Home extends Component {
         >
           Pesquisar
         </button>
-        <Link to="/cart" className="btn" data-testid="shopping-cart-button">
+        <Link
+          to="/cart"
+          data-testid="shopping-cart-button"
+        >
           <button type="button">Carrinho</button>
         </Link>
         <h3>Categorias</h3>
