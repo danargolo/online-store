@@ -1,12 +1,55 @@
 import React, { Component } from 'react';
 
 export default class Cart extends Component {
+  state = {
+    addRefresh: false,
+    removeRefresh: false,
+    clearRefresh: false,
+  };
+
   isCartEmpty = () => {
     const cartItems = JSON.parse(localStorage.getItem('cart'));
     return !cartItems;
   };
 
+  addOneInCart = (product) => {
+    this.setState({ addRefresh: true });
+    const storage = JSON.parse(localStorage.getItem('cart'));
+    const nonRepeatedItems = storage.filter((item) => item.id !== product.id);
+    const repeatedItem = storage.find((item) => item.id === product.id);
+    const { totalQuantity } = repeatedItem;
+    const newQuantity = totalQuantity + 1;
+    product.totalQuantity = newQuantity;
+    const newStorage = [...nonRepeatedItems, product];
+    localStorage.setItem('cart', JSON.stringify(newStorage));
+    this.setState({ addRefresh: false });
+  };
+
+  removeOne = (product) => {
+    this.setState({ removeRefresh: true });
+    const storage = JSON.parse(localStorage.getItem('cart'));
+    const nonRepeatedItems = storage.filter((item) => item.id !== product.id);
+    const repeatedItem = storage.find((item) => item.id === product.id);
+    const { totalQuantity } = repeatedItem;
+    if (totalQuantity === 1) return;
+    const newQuantity = totalQuantity - 1;
+    product.totalQuantity = newQuantity;
+    const newStorage = [...nonRepeatedItems, product];
+    localStorage.setItem('cart', JSON.stringify(newStorage));
+    this.setState({ removeRefresh: false });
+  };
+
+  clearItem = (product) => {
+    this.setState({ clearRefresh: true });
+    const storage = JSON.parse(localStorage.getItem('cart'));
+    const nonRepeatedItems = storage.filter((item) => item.id !== product.id);
+    const newStorage = [...nonRepeatedItems];
+    localStorage.setItem('cart', JSON.stringify(newStorage));
+    this.setState({ clearRefresh: false });
+  };
+
   render() {
+    const { addRefresh, removeRefresh, clearRefresh } = this.state;
     const cartItems = JSON.parse(localStorage.getItem('cart'));
     return (
       <div>
@@ -22,9 +65,37 @@ export default class Cart extends Component {
               const { price, title, totalQuantity } = item;
               return (
                 <div key={ title }>
-                  <p data-testid="shopping-cart-product-name">{title}</p>
-                  <p>{ price * totalQuantity }</p>
-                  <p data-testid="shopping-cart-product-quantity">{ totalQuantity}</p>
+                  <div>
+                    <p data-testid="shopping-cart-product-name">{title}</p>
+                    <p>{ price * totalQuantity }</p>
+                    <p data-testid="shopping-cart-product-quantity">{ totalQuantity}</p>
+                  </div>
+                  <div>
+                    <button
+                      type="button"
+                      data-testid="product-increase-quantity"
+                      onClick={ () => this.addOneInCart(item) }
+                      disabled={ addRefresh }
+                    >
+                      +
+                    </button>
+                    <button
+                      type="button"
+                      data-testid="product-decrease-quantity"
+                      onClick={ () => this.removeOne(item) }
+                      disabled={ removeRefresh }
+                    >
+                      -
+                    </button>
+                    <button
+                      type="button"
+                      data-testid="remove-product"
+                      onClick={ () => this.clearItem(item) }
+                      clearRefresh={ clearRefresh }
+                    >
+                      Remover
+                    </button>
+                  </div>
                 </div>
               );
             })
