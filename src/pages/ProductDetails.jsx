@@ -1,10 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import Review from '../components/Review';
 // import { useHistory } from 'react-router-dom';
 
 class ProductsDetails extends React.Component {
   render() {
-    const { history, location: { state: { title, thumbnail, price, id } } } = this.props;
+    const { history, location: {
+      data: { addToCartDetails },
+      state: { title, thumbnail, price, id, product } } } = this.props;
     return (
       <>
         <h1>Detalhes do Produto</h1>
@@ -24,6 +27,13 @@ class ProductsDetails extends React.Component {
           alt={ id }
         />
         <button
+          data-testid="product-detail-add-to-cart"
+          onClick={ () => addToCartDetails(product) }
+          type="button"
+        >
+          Adicionar ao carrinho
+        </button>
+        <button
           type="button"
           data-testid="shopping-cart-button"
           onClick={ () => history.push('/cart') }
@@ -31,6 +41,10 @@ class ProductsDetails extends React.Component {
           Ir para carrinho
 
         </button>
+
+        <Review
+          ProductId={ product.id }
+        />
       </>
     );
   }
