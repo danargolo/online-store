@@ -138,6 +138,10 @@ export default class Home extends Component {
                       title: product.title,
                       price: product.price,
                       thumbnail: product.thumbnail,
+                      product,
+                    },
+                    data: {
+                      addToCartDetails: this.addToCart,
                     },
                   } }
                   data-testid="product-detail-link"
