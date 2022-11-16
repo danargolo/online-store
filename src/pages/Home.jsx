@@ -135,7 +135,7 @@ export default class Home extends Component {
               <div key={ product.id }>
                 <Link
                   to={ {
-                    pathname: '/productDetails',
+                    pathname: `/productDetails${product.id}`,
                     state: {
                       title: product.title,
                       price: product.price,

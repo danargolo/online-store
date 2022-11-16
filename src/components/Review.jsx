@@ -6,52 +6,61 @@ const RATING = ['1', '2', '3', '4', '5'];
 
 export default class Review extends Component {
   state = {
+    email: '',
+    text: '',
     isChecked: [false, false, false, false, false],
     rating: 0,
-    hasStorage: false,
+  };
+
+  emailValidation = (param) => {
+    const regex = /[a-zA-Z0-9._+-]+@\S+/g;
+    this.setState({
+      isEmailValidate: regex.test(param),
+    });
   };
 
   handleChange = ({ target }) => {
     const { value, id } = target;
     this.setState({
       [id]: value,
+    }, () => {
+      const { email } = this.state;
+      this.emailValidation(email);
     });
   };
 
   onClickSubmit = (event) => {
     event.preventDefault();
-    const { email, text, rating, hasStorage } = this.state;
-    const { ProductId } = this.props;
+    const { email, text, rating, isEmailValidate } = this.state;
+    const { productId } = this.props;
     const saveReview = {
-      ProductId,
+      productId,
       email,
       text,
       rating,
     };
-
-    const storage = JSON.parse(localStorage.getItem('reviews'));
-    if (!storage) {
-      localStorage.setItem('reviews', JSON.stringify([saveReview]));
-      this.setState({ hasStorage: true });
+    if (isEmailValidate && rating !== 0) {
+      const storage = JSON.parse(localStorage.getItem(`${productId}`));
+      if (!storage) {
+        localStorage.setItem(productId, JSON.stringify([saveReview]));
+        this.setState({
+          invalidEmail: false,
+          email: '',
+          text: '',
+        });
+      } else {
+        const newStorage = [...storage, saveReview];
+        localStorage.setItem(productId, JSON.stringify(newStorage));
+        this.setState({
+          invalidEmail: false,
+          email: '',
+          text: '',
+        });
+      }
     } else {
-      const newStorage = [...storage, saveReview];
-      localStorage.setItem('reviews', JSON.stringify(newStorage));
+      this.setState({ invalidEmail: true });
     }
-    this.refreshStorage();
     this.forceUpdate();
-  };
-
-  refreshStorage = () => {
-    const storage = JSON.parse(localStorage.getItem('reviews'))
-    storage.forEach((item) => {
-      const { ProductId, email, rating, text } = item; 
-      const obj = {
-        email,
-        rating,
-        text,
-      };
-      localStorage.setItem(ProductId, JSON.stringify(obj));
-    })
   };
 
   handleRadio = (index) => {
@@ -70,7 +79,8 @@ export default class Review extends Component {
   };
 
   render() {
-    const { isChecked, hasStorage } = this.state;
+    const { isChecked, invalidEmail, email, text } = this.state;
+    const { productId } = this.props;
     return (
       <>
         <form>
@@ -90,7 +100,7 @@ export default class Review extends Component {
             data-testid="product-detail-email"
             id="email"
             type="email"
-            required
+            value={ email }
             onChange={ this.handleChange }
           />
           <textarea
@@ -99,7 +109,7 @@ export default class Review extends Component {
             style={ { resize: 'none' } }
             cols={ 40 }
             rows={ 5 }
-            required
+            value={ text }
             onChange={ this.handleChange }
           />
           <button
@@ -110,9 +120,13 @@ export default class Review extends Component {
             Enviar
           </button>
         </form>
-        {
-          hasStorage && <Comments />
-        }
+        { invalidEmail ? (
+          <p data-testid="error-msg">Campos inválidos</p>
+        ) : null}
+        <Comments
+          productId={ productId }
+
+        />
         <div />
       </>
     );
@@ -120,5 +134,5 @@ export default class Review extends Component {
 }
 
 Review.propTypes = {
-  ProductId: PropTypes.string.isRequired,
+  productId: PropTypes.string.isRequired,
 };
