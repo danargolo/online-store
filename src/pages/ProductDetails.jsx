@@ -5,19 +5,52 @@ import { getProductById } from '../services/api';
 
 class ProductsDetails extends React.Component {
   state = {
-    productDetails: '',
+    productDetails: { },
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     this.handleProduct();
   }
 
   handleProduct = async () => {
     const { match } = this.props;
     const { params } = match;
-    console.log(params.id);
     const productDetails = await getProductById(params.id);
     this.setState({ productDetails });
+  };
+
+  isRepeatedItem = (product) => {
+    const storage = JSON.parse(localStorage.getItem('cart'));
+    const isRepeated = storage.some((item) => item.id === product.id);
+    return isRepeated;
+  };
+
+  addOne = (product) => {
+    const storage = JSON.parse(localStorage.getItem('cart'));
+    const nonRepeatedItems = storage.filter((item) => item.id !== product.id);
+    const repeatedItem = storage.find((item) => item.id === product.id);
+    const { totalQuantity } = repeatedItem;
+    const newQuantity = totalQuantity + 1;
+    product.totalQuantity = newQuantity;
+    const newStorage = [...nonRepeatedItems, product];
+    localStorage.setItem('cart', JSON.stringify(newStorage));
+  };
+
+  addToCart = (product) => {
+    const storage = JSON.parse(localStorage.getItem('cart'));
+    if (storage === null) {
+      product.totalQuantity = 1;
+      localStorage.setItem('cart', JSON.stringify([product]));
+    } else {
+      const isRepeated = this.isRepeatedItem(product);
+      if (isRepeated) {
+        this.addOne(product);
+      } else {
+        product.totalQuantity = 1;
+        const newStorage = [...storage, product];
+        localStorage.setItem('cart', JSON.stringify(newStorage));
+      }
+    }
   };
 
   render() {
@@ -25,7 +58,6 @@ class ProductsDetails extends React.Component {
       // data: { addToCartDetails },
       state: { product } } } = this.props;
     const { productDetails } = this.state;
-    // console.log(history)
     return (
       <>
         <h1>Detalhes do Produto</h1>
@@ -46,7 +78,7 @@ class ProductsDetails extends React.Component {
         />
         <button
           data-testid="product-detail-add-to-cart"
-          // onClick={ () => addToCartDetails(productDetails) }
+          onClick={ () => this.addToCart(productDetails) }
           type="button"
         >
           Adicionar ao carrinho
