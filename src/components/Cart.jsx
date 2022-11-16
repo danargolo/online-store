@@ -1,15 +1,11 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 export default class Cart extends Component {
   state = {
     addRefresh: false,
     removeRefresh: false,
     clearRefresh: false,
-  };
-
-  isCartEmpty = () => {
-    const cartItems = JSON.parse(localStorage.getItem('cart'));
-    return !cartItems;
   };
 
   addOneInCart = (product) => {
@@ -46,6 +42,16 @@ export default class Cart extends Component {
     const newStorage = [...nonRepeatedItems];
     localStorage.setItem('cart', JSON.stringify(newStorage));
     this.setState({ clearRefresh: false });
+  };
+
+  handleClick = () => {
+    const { history } = this.props;
+    history.push('/checkout');
+  };
+
+  isCartEmpty = () => {
+    const cartItems = JSON.parse(localStorage.getItem('cart'));
+    return !cartItems;
   };
 
   render() {
@@ -101,7 +107,20 @@ export default class Cart extends Component {
             })
           )
         }
+        <button
+          data-testid="checkout-products"
+          onClick={ this.handleClick }
+          type="button"
+        >
+          Finalizar compra
+        </button>
       </div>
     );
   }
 }
+
+Cart.propTypes = {
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
+};
